@@ -1,0 +1,58 @@
+# Project: Ã∞≥‘…ﬂ
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = main.o Init.o Input.o snakeModule.o collision.o foodProp.o Obstacle.o scoreRank.o Diffi.o Paint.o statechange.o
+LINKOBJ  = main.o Init.o Input.o snakeModule.o collision.o foodProp.o Obstacle.o scoreRank.o Diffi.o Paint.o statechange.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -lgraphics64 -luuid -lmsimg32 -lgdi32 -limm32 -lole32 -loleaut32 -lwinmm -luuid -g3
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = Ã∞≥‘…ﬂ.exe
+CXXFLAGS = $(CXXINCS) -g3
+CFLAGS   = $(INCS) -g3
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+Init.o: Init.cpp
+	$(CPP) -c Init.cpp -o Init.o $(CXXFLAGS)
+
+Input.o: Input.cpp
+	$(CPP) -c Input.cpp -o Input.o $(CXXFLAGS)
+
+snakeModule.o: snakeModule.cpp
+	$(CPP) -c snakeModule.cpp -o snakeModule.o $(CXXFLAGS)
+
+collision.o: collision.cpp
+	$(CPP) -c collision.cpp -o collision.o $(CXXFLAGS)
+
+foodProp.o: foodProp.cpp
+	$(CPP) -c foodProp.cpp -o foodProp.o $(CXXFLAGS)
+
+Obstacle.o: Obstacle.cpp
+	$(CPP) -c Obstacle.cpp -o Obstacle.o $(CXXFLAGS)
+
+scoreRank.o: scoreRank.cpp
+	$(CPP) -c scoreRank.cpp -o scoreRank.o $(CXXFLAGS)
+
+Diffi.o: Diffi.cpp
+	$(CPP) -c Diffi.cpp -o Diffi.o $(CXXFLAGS)
+
+Paint.o: Paint.cpp
+	$(CPP) -c Paint.cpp -o Paint.o $(CXXFLAGS)
+
+statechange.o: statechange.cpp
+	$(CPP) -c statechange.cpp -o statechange.o $(CXXFLAGS)
