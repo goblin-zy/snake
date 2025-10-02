@@ -1,18 +1,6 @@
-#include <graphics.h>   // EGE核心头文件
-#include <cstdio>       // 辅助输入输出
-#include <ctime>        // 时间相关（状态管理用）
-// 自定义模块头文件（按需添加）
-#include "Init.h"
-#include "Input.h"
-#include "Paint.h"
-#include "statechange.h"
+#include"allcpp.h" 
 
-extern GameState g_currentState;
 
-    PIMAGE img_start;
-    PIMAGE img_rank;
-    PIMAGE img_setting;
-    PIMAGE img_exit;
 
 
 void initWindow(int width, int height) {
@@ -29,10 +17,27 @@ void loadResources() {
     img_setting=newimage();
     img_exit=newimage();
 
+    img_head_up=newimage();
+    img_head_down=newimage();
+    img_head_left=newimage();
+    img_head_right=newimage();
+    img_body=newimage();
+
+    img_food=newimage();
+
     getimage(img_start,"btn_start.png");
     getimage(img_rank,"btn_rank.png");
     getimage(img_setting,"btn_setting.png");
     getimage(img_exit,"btn_exit.png");
+
+    getimage(img_head_up,"btn_head_up.png");
+    getimage(img_head_down,"btn_head_down.png");
+    getimage(img_head_left,"btn_head_left.png");
+    getimage(img_head_right,"btn_head_right.png");
+    getimage(img_body,"btn_body.png");
+
+    getimage(img_food,"btn_food.png");
+
     
 }
 
@@ -48,3 +53,4 @@ void releaseResources() {
 	cleardevice(); 
     closegraph();
 }
+

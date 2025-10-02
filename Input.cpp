@@ -1,26 +1,9 @@
-#include <graphics.h>   // EGE核心头文件
-#include <cstdio>       // 辅助输入输出
-#include <ctime>        // 时间相关（状态管理用）
-// 自定义模块头文件（按需添加）
-#include "Init.h"
-#include "Input.h"
-#include "Paint.h"
-#include "statechange.h"
+#include "allcpp.h"
 
 
-// 主菜单按钮坐标（需与drawMainMenu()中的绘制位置完全一致）
-#define BTN_START_X  338  // 原270 → 270×1.25=337.5≈338
-#define BTN_START_Y  188  // 原150 → 150×1.25=187.5≈188
-#define BTN_RANK_X   338  // 原270 → 338
-#define BTN_RANK_Y   263  // 原210 → 210×1.25=262.5≈263
-#define BTN_SET_X    338  // 原270 → 338
-#define BTN_SET_Y    338  // 原270 → 270×1.25=337.5≈338
-#define BTN_EXIT_X   338  // 原270 → 338
-#define BTN_EXIT_Y   413  // 原330 → 330×1.25=412.5≈413
-#define BTN_W        100  
-#define BTN_H        40   // 按钮尺寸：100×40
 
-ClickType listenMouseClick() {
+//主菜单选择 
+ClickType listenMouseClick_Mainmenu() {
     mouse_msg msg;
     ClickType click = CLICK_NONE;
 
@@ -52,3 +35,70 @@ ClickType listenMouseClick() {
     }
     return click;
 }
+
+
+// 首先需要在Input.h的ClickType枚举中添加难度选择相关的点击类型
+// 建议在Input.h中补充：
+// enum ClickType {
+//     ...(原有类型)...
+//     CLICK_EASY,       // 简单难度
+//     CLICK_MEDIUM,     // 中等难度
+//     CLICK_HARD,       // 困难难度
+//     CLICK_BACK        // 返回主菜单
+// };
+
+
+// 难度选择界面的鼠标点击监听函数
+ClickType listenMouseClick_difficulty(){
+    mouse_msg msg;
+    ClickType click = CLICK_NONE;  // 默认为无点击
+
+    // 轮询鼠标消息（仅处理左键按下事件）
+    while (mousemsg()) {
+        msg = getmouse();
+        if (msg.is_down() && msg.is_left()) {  // 检测左键按下动作
+            // 1. 简单难度按钮检测
+            if (msg.x >= BTN_DIFF_X && msg.x <= BTN_DIFF_X + BTN_DIFF_W &&
+                msg.y >= BTN_EASY_Y && msg.y <= BTN_EASY_Y + BTN_DIFF_H) {
+                click = CLICK_EASY;  // 返回简单难度点击类型
+            }
+            // 2. 中等难度按钮检测
+            else if (msg.x >= BTN_DIFF_X && msg.x <= BTN_DIFF_X + BTN_DIFF_W &&
+                     msg.y >= BTN_MEDIUM_Y && msg.y <= BTN_MEDIUM_Y + BTN_DIFF_H) {
+                click = CLICK_MEDIUM;  // 返回中等难度点击类型
+            }
+            // 3. 困难难度按钮检测
+            else if (msg.x >= BTN_DIFF_X && msg.x <= BTN_DIFF_X + BTN_DIFF_W &&
+                     msg.y >= BTN_HARD_Y && msg.y <= BTN_HARD_Y + BTN_DIFF_H) {
+                click = CLICK_DIFFICULT;  // 返回困难难度点击类型
+            }
+            // 4. 返回按钮检测
+            else if (msg.x >= BTN_BACK_X && msg.x <= BTN_BACK_X + BTN_BACK_W &&
+                     msg.y >= BTN_BACK_Y && msg.y <= BTN_BACK_Y + BTN_BACK_H) {
+                click = CLICK_BACK;  // 返回主菜单点击类型
+            }
+        }
+    }
+    return click;
+}
+
+ClickType listenMouseClick_Run(){
+    mouse_msg msg;
+    ClickType click = CLICK_NONE;  // 默认为无点击
+
+    // 轮询鼠标消息（仅处理左键按下事件）
+    while (mousemsg()) {
+        msg = getmouse();
+        if (msg.is_down() && msg.is_left()) {  // 检测左键按下动作
+
+            if (msg.x >= BTN_READY_START_X && msg.x <= BTN_READY_START_X+BTN_READY_START_W &&
+                msg.y >= BTN_READY_START_Y && msg.y <= BTN_READY_START_Y + BTN_READY_START_H) {
+                click = CLICK_RUN;
+            }
+
+        }
+    }
+    return click;
+}
+    
+

@@ -1,19 +1,34 @@
-#include <graphics.h>   // EGE核心头文件
-#include <cstdio>       // 辅助输入输出
-#include <ctime>        // 时间相关（状态管理用）
-// 自定义模块头文件（按需添加）
-#include "Init.h"
-#include "Input.h"
-#include "Paint.h"
-#include "statechange.h"
+#include "allcpp.h"
 
 
 
-// 定义全局核心变量（跨模块共享）
+// 全局变量定义（只定义一次）
 GameState g_currentState;  // 当前游戏状态
+int g_currentScore = 0;
+Snake g_snake;
+Food g_food[100];
+int g_foodCount = 0;
+int snakespeed;
+int obstacle;
+//图片 
+    PIMAGE img_start;
+    PIMAGE img_rank;
+    PIMAGE img_setting;
+    PIMAGE img_exit;
+//蛇的图片
+    PIMAGE img_head_up;
+    PIMAGE img_head_down;
+    PIMAGE img_head_left;
+    PIMAGE img_head_right;
+    PIMAGE img_body;
+//食物的图片
+    PIMAGE img_food;
 
 // 声明主菜单处理函数（阶段1核心逻辑）
 void handleMainMenu();
+void handleDifficultySelect();
+void handleReadyStage();
+void handleRunning();
 
 int main() {
     // 1. 初始化：窗口→资源→数据
@@ -25,9 +40,21 @@ int main() {
     while (is_run()) {
         // 根据当前状态执行对应逻辑（阶段1仅主菜单）
         switch (g_currentState) {
-            case STATE_MAIN_MENU:
+            case STATE_MAIN_MENU:{
                 handleMainMenu();
                 break;
+            }
+            case STATE_DIFFICULTY_SELECT:{
+            	handleDifficultySelect();
+				break;
+			}
+			case STATE_READY:{
+				handleReadyStage();
+				break;
+			} 
+            case STATE_RUNNING:{
+                handleRunning();
+            }
             // 其他状态（难度选择/排行榜等）后续阶段补充
             default:
                 break;
@@ -46,12 +73,12 @@ void handleMainMenu() {
     drawMainMenu();
 
     // 步骤2：监听鼠标点击
-    ClickType click = listenMouseClick();
+    ClickType click = listenMouseClick_Mainmenu();
 
     // 步骤3：根据点击类型切换状态
     switch (click) {
         case CLICK_START:
-            switchState(STATE_DIFFICULTY_SELECT);  // 开始→难度选择
+            switchState(STATE_DIFFICULTY_SELECT);  // 开始→难度选择1
             break;
         case CLICK_RANKING:
             switchState(STATE_RANKING);            // 排行榜→排行榜状态
@@ -65,4 +92,32 @@ void handleMainMenu() {
         default:
             break;  // 无点击则不处理
     }
+}
+
+void handleDifficultySelect(){
+	drawDifficultySelect();
+	ClickType click = listenMouseClick_difficulty();
+	if(click==CLICK_EASY||click==CLICK_MEDIUM||click==CLICK_DIFFICULT){
+    loadDefaultDifficulty();
+    setDifficulty(click);
+    switchState(STATE_READY);
+}
+    if(click==CLICK_BACK){
+	switchState(STATE_MAIN_MENU);
+}
+}
+
+void handleReadyStage(){
+    resetScore();
+    initSnake();
+    generateFood();
+	drawReady(); 
+    ClickType click=listenMouseClick_Run();
+    if(click==CLICK_RUN){
+        switchState(STATE_RUNNING);
+    }
+}
+
+void handleRunning(){
+    
 }
