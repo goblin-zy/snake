@@ -62,5 +62,7 @@
 void drawMainMenu();
 void drawDifficultySelect();
 void drawReady();
+// 绘制游戏运行状态
+void drawRunning();
 #endif
 

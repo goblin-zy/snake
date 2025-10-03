@@ -101,4 +101,31 @@ ClickType listenMouseClick_Run(){
     return click;
 }
     
-
+// 监听键盘输入，控制蛇的方向   直接改变了方向，所以返回值是void
+void listenKeyPress() {
+    key_msg key;
+    // 检查是否有键盘消息
+    if (kbhit()) {
+        key = getkey();
+        // 只处理按键按下事件
+        if (key.msg == key_msg_down) {
+            switch (key.key) {
+                case VK_UP:    // 上方向键
+                    changeDirection(0);
+                    break;
+                case VK_RIGHT:  // 右方向键
+                    changeDirection(1);
+                    break;
+                case VK_DOWN:  // 下方向键
+                    changeDirection(2);
+                    break;
+                case VK_LEFT:  // 左方向键
+                    changeDirection(3);
+                    break;
+                case VK_ESCAPE: // ESC键暂停游戏
+                    // 这里可以添加暂停逻辑
+                    break;
+            }
+        }
+    }
+}

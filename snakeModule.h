@@ -11,5 +11,8 @@ typedef struct {
 
 
  void initSnake(); 
- 
+// 移动蛇
+void moveSnake();
+// 改变蛇的方向
+void changeDirection(int newDir);
  #endif

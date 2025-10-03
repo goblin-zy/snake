@@ -217,3 +217,54 @@ outtextxy(titleX, titleY, statusTitle);
 
 }
     
+
+
+// 绘制游戏运行中的元素
+void drawRunning() {
+    // 1. 绘制黑色背景
+    setfillcolor(BLACK);
+   bar(0, 0, WINDOW_W, WINDOW_H);
+
+    // 2. 绘制网格
+    setcolor(BLUE);
+    for (int x = MAP_START_X; x <= MAP_END_X; x += GRID_SIZE) {
+        line(x, MAP_START_Y, x, MAP_END_Y);
+    }
+    for (int y = MAP_START_Y; y <= MAP_END_Y; y += GRID_SIZE) {
+        line(MAP_START_X, y, MAP_END_X, y);
+    }
+
+    // 3. 绘制蛇
+    for (int i = 0; i < g_snake.len; i++) {
+        if (i == 0) {  // 蛇头
+            switch (g_snake.dir) {
+                case 0: putimage(g_snake.x[i], g_snake.y[i], img_head_up); break;
+                case 1: putimage(g_snake.x[i], g_snake.y[i], img_head_right); break;
+                case 2: putimage(g_snake.x[i], g_snake.y[i], img_head_down); break;
+                case 3: putimage(g_snake.x[i], g_snake.y[i], img_head_left); break;
+            }
+        } else {  // 蛇身
+            putimage(g_snake.x[i], g_snake.y[i], img_body);
+        }
+    }
+
+    // 4. 绘制食物
+    for (int i = 0; i < g_foodCount; i++) {
+        if (g_food[i].exist) {
+            putimage(g_food[i].x, g_food[i].y, img_food);
+        }
+    }
+
+    // 5. 绘制分数和难度信息
+    setcolor(WHITE);
+    setfont(20, 0, "宋体");
+    char scoreText[30];
+    sprintf(scoreText, "当前分数:%d", g_currentScore);
+    outtextxy(TEXT_SCORE_X, TEXT_SCORE_Y, scoreText);
+
+    char diffText[30];
+    if (obstacle == 1) sprintf(diffText, "当前难度:简单");
+    else if (obstacle == 2) sprintf(diffText, "当前难度:中等");
+    else sprintf(diffText, "当前难度:困难");
+    outtextxy(TEXT_DIFF_X, TEXT_DIFF_Y, diffText);
+}

@@ -21,4 +21,5 @@ enum ClickType {
 ClickType listenMouseClick_Mainmenu();
 ClickType listenMouseClick_difficulty();
 ClickType listenMouseClick_Run();
+void listenKeyPress();
 #endif

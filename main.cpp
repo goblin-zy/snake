@@ -107,7 +107,8 @@ void handleDifficultySelect(){
 }
 }
 
-void handleReadyStage(){
+
+/*void handleReadyStage(){
     resetScore();
     initSnake();
     generateFood();
@@ -116,8 +117,50 @@ void handleReadyStage(){
     if(click==CLICK_RUN){
         switchState(STATE_RUNNING);
     }
+}*/
+
+void handleReadyStage(){
+    resetScore();
+    initSnake();
+    
+    // 添加静态标志，确保食物只生成一次
+    static bool hasGeneratedFood = false;
+    if (!hasGeneratedFood) {
+        generateFood();  // 仅首次进入准备阶段时生成食物
+        hasGeneratedFood = true;
+    }
+    
+    drawReady(); 
+    ClickType click = listenMouseClick_Run();
+    if(click == CLICK_RUN){
+        hasGeneratedFood = false;  // 重置标志，下次进入准备阶段重新生成
+        switchState(STATE_RUNNING);
+    }
 }
 
 void handleRunning(){
+    // 1. 监听键盘输入，改变蛇的方向
+    listenKeyPress();
     
+    // 2. 控制蛇的移动速度，根据难度调整
+    static int speedCounter = 0;
+    if (speedCounter >= snakespeed) {
+        // 移动蛇
+        moveSnake();
+        
+        // 3. 检查是否吃到食物
+        bool ateFood = checkFoodCollision();
+        
+        // 4. 如果吃到食物，重新生成食物
+        if (ateFood) {
+            generateFood();
+        }
+        
+        speedCounter = 0;
+    } else {
+        speedCounter++;
+    }
+    
+    // 5. 绘制游戏元素
+    drawRunning();
 }
