@@ -10,6 +10,11 @@ Food g_food[100];
 int g_foodCount = 0;
 int snakespeed;
 int obstacle;
+
+// 初始化全局变量
+Obstacle g_obstacles[100];  // 增加容量到100个
+int g_obstacleCount = 0;
+
 //图片 
     PIMAGE img_start;
     PIMAGE img_rank;
@@ -23,6 +28,9 @@ int obstacle;
     PIMAGE img_body;
 //食物的图片
     PIMAGE img_food;
+//障碍物图片
+    PIMAGE img_wall; 
+
 
 // 声明主菜单处理函数（阶段1核心逻辑）
 void handleMainMenu();
@@ -122,6 +130,8 @@ void handleDifficultySelect(){
 void handleReadyStage(){
     resetScore();
     initSnake();
+    initObstacles(); // 初始化障碍物
+    generateObstacles(); // 生成障碍物
     
     // 添加静态标志，确保食物只生成一次
     static bool hasGeneratedFood = false;
@@ -139,7 +149,7 @@ void handleReadyStage(){
 }
 
 void handleRunning(){
-    // 1. 监听键盘输入，改变蛇的方向
+    // 1. 监听键盘，改变蛇的方向
     listenKeyPress();
     
     // 2. 控制蛇的移动速度，根据难度调整
@@ -148,6 +158,13 @@ void handleRunning(){
         // 移动蛇
         moveSnake();
         
+        // 检查是否碰撞(边界、自身、障碍物)
+        if (checkCollision()) {
+            // 碰撞后游戏结束，返回主菜单
+            switchState(STATE_MAIN_MENU);
+            return;
+        }
+        
         // 3. 检查是否吃到食物
         bool ateFood = checkFoodCollision();
         
@@ -155,6 +172,16 @@ void handleRunning(){
         if (ateFood) {
             generateFood();
         }
+        
+    // 困难模式：移动障碍物
+    if (obstacle == 3) {
+        moveObstacles();
+        // 补充检测：移动障碍物后是否与蛇碰撞
+        if (checkCollision()) {
+            switchState(STATE_MAIN_MENU);
+            return;
+        }
+    }
         
         speedCounter = 0;
     } else {

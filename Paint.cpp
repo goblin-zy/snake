@@ -194,6 +194,9 @@ outtextxy(titleX, titleY, statusTitle);
               BTN_READY_START_Y + 10, startBtnText);
 
 
+//绘制墙
+    drawObstacles();
+
     //蛇和食物的绘制
     // 1. 绘制蛇（使用图片替代颜色填充）
     for (int i = 0; i < g_snake.len; i++) {
@@ -234,6 +237,9 @@ void drawRunning() {
         line(MAP_START_X, y, MAP_END_X, y);
     }
 
+//绘制墙
+    drawObstacles();
+
     // 3. 绘制蛇
     for (int i = 0; i < g_snake.len; i++) {
         if (i == 0) {  // 蛇头
@@ -267,4 +273,29 @@ void drawRunning() {
     else if (obstacle == 2) sprintf(diffText, "当前难度:中等");
     else sprintf(diffText, "当前难度:困难");
     outtextxy(TEXT_DIFF_X, TEXT_DIFF_Y, diffText);
+}
+
+
+// 绘制障碍物
+void drawObstacles() {
+    for (int i = 0; i < g_obstacleCount; i++) {
+        if (g_obstacles[i].exist) {
+            // 静态障碍物：使用 wall.png 图片绘制
+            if (g_obstacles[i].type == OBSTACLE_STATIC) {
+                // 确保 img_wall 已在资源加载函数中正确加载
+                putimage(g_obstacles[i].x, g_obstacles[i].y, img_wall);
+            } 
+            // 移动障碍物：使用红色实心方块绘制（适配 EGE 19.01）
+            else {
+                setfillcolor(RED);  // 设置填充颜色为红色
+                // 使用 EGE 兼容的 bar 函数绘制矩形，参数为左上角和右下角坐标
+                bar(
+                    g_obstacles[i].x,                // 左上角 X
+                    g_obstacles[i].y,                // 左上角 Y
+                    g_obstacles[i].x + GRID_SIZE,    // 右下角 X（与网格大小匹配）
+                    g_obstacles[i].y + GRID_SIZE     // 右下角 Y（与网格大小匹配）
+                );
+            }
+        }
+    }
 }

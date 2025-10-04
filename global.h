@@ -23,4 +23,10 @@ extern int obstacle;
     extern PIMAGE img_head_right;
     extern PIMAGE img_body;
     extern PIMAGE img_food;
+
+    // 全局障碍物数组及数量
+    extern Obstacle g_obstacles[100];  // 最多50个障碍物
+    extern int g_obstacleCount;
+    
+    extern PIMAGE img_wall;  // 新增：墙的图片
 #endif

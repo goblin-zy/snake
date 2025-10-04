@@ -3,5 +3,6 @@
 
 // 检查蛇是否吃到食物
 bool checkFoodCollision();
-
+// 检查蛇是否碰撞(边界、自身、障碍物)
+bool checkCollision();
 #endif

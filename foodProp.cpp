@@ -1,17 +1,24 @@
 #include "allcpp.h"
 
 
-// 检查食物是否与蛇身重叠
 bool isFoodOverlap(int x, int y) {
+    // 已有的蛇身和食物重叠检查
     for (int i = 0; i < g_snake.len; i++) {
         if (g_snake.x[i] == x && g_snake.y[i] == y) return true;
     }
-    // 检查是否与其他食物重叠
     for (int i = 0; i < g_foodCount; i++) {
         if (g_food[i].exist && g_food[i].x == x && g_food[i].y == y) {
             return true;
         }
     }
+
+    // 新增：检查与障碍物重叠
+    for (int i = 0; i < g_obstacleCount; i++) {
+        if (g_obstacles[i].exist && g_obstacles[i].x == x && g_obstacles[i].y == y) {
+            return true;
+        }
+    }
+
     return false;
 }
 

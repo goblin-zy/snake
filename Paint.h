@@ -64,5 +64,7 @@ void drawDifficultySelect();
 void drawReady();
 // 绘制游戏运行状态
 void drawRunning();
+// 绘制障碍物
+void drawObstacles();
 #endif
 

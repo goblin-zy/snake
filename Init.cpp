@@ -24,6 +24,7 @@ void loadResources() {
     img_body=newimage();
 
     img_food=newimage();
+    img_wall=newimage();
 
     getimage(img_start,"btn_start.png");
     getimage(img_rank,"btn_rank.png");
@@ -37,7 +38,7 @@ void loadResources() {
     getimage(img_body,"btn_body.png");
 
     getimage(img_food,"btn_food.png");
-
+    getimage(img_wall,"btn_wall.png");
     
 }
 
