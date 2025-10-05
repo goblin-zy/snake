@@ -11,6 +11,16 @@ int g_foodCount = 0;
 int snakespeed;
 int obstacle;
 
+//道具相关
+bool g_isInvincible = false;
+int g_invincibleDuration = 0;
+bool g_isDoubleScore = false;
+int g_doubleScoreDuration = 0;
+int g_originalSpeed = 0;
+int g_speedEffectDuration = 0;
+Prop g_props[10] = {0};
+int g_propCount = 0;
+
 // 初始化全局变量
 Obstacle g_obstacles[100];  // 增加容量到100个
 int g_obstacleCount = 0;
@@ -31,6 +41,12 @@ int g_obstacleCount = 0;
 //障碍物图片
     PIMAGE img_wall; 
 
+//道具
+ PIMAGE img_prop_speedup;    // 加速道具图片
+ PIMAGE img_prop_invincible; // 无敌道具图片
+ PIMAGE img_prop_grow;       // 增长道具图片
+ PIMAGE img_prop_double;     // 得分加倍道具图片
+
 
 // 声明主菜单处理函数（阶段1核心逻辑）
 void handleMainMenu();
@@ -39,6 +55,8 @@ void handleReadyStage();
 void handleRunning();
 
 int main() {
+    srand((unsigned int)time(NULL));    
+
     // 1. 初始化：窗口→资源→数据
     initWindow(800,600);    // 创建640×480窗口
     loadResources();         // 加载主菜单图片/字体
@@ -132,7 +150,18 @@ void handleReadyStage(){
     initSnake();
     initObstacles(); // 初始化障碍物
     generateObstacles(); // 生成障碍物
-    
+
+    /* ★★★ 修复3：确保道具计数器完全清零 */
+    g_propCount = 0;
+    for (int i = 0; i < 10; ++i){
+        g_props[i].exist = false;
+        g_props[i].type = PROP_NONE;
+        g_props[i].duration = 0;
+        g_props[i].x = 0;
+        g_props[i].y = 0;
+    }
+
+
     // 添加静态标志，确保食物只生成一次
     static bool hasGeneratedFood = false;
     if (!hasGeneratedFood) {
@@ -149,18 +178,20 @@ void handleReadyStage(){
 }
 
 void handleRunning(){
-    // 1. 监听键盘，改变蛇的方向
+    // 更新道具效果状态
+    updatePropEffect();
+
+    // 1. 处理输入，改变蛇的方向
     listenKeyPress();
     
-    // 2. 控制蛇的移动速度，根据难度调整
+    // 2. 控制蛇的移动速度
     static int speedCounter = 0;
     if (speedCounter >= snakespeed) {
         // 移动蛇
         moveSnake();
         
-        // 检查是否碰撞(边界、自身、障碍物)
+        // 检查是否碰撞
         if (checkCollision()) {
-            // 碰撞后游戏结束，返回主菜单
             switchState(STATE_MAIN_MENU);
             return;
         }
@@ -168,26 +199,28 @@ void handleRunning(){
         // 3. 检查是否吃到食物
         bool ateFood = checkFoodCollision();
         
-        // 4. 如果吃到食物，重新生成食物
+        // 4. 检查是否吃到道具
+        checkPropCollision();
+        
+        // 5. 如果吃到食物，重新生成食物
         if (ateFood) {
             generateFood();
         }
         
-    // 困难模式：移动障碍物
-    if (obstacle == 3) {
-        moveObstacles();
-        // 补充检测：移动障碍物后是否与蛇碰撞
-        if (checkCollision()) {
-            switchState(STATE_MAIN_MENU);
-            return;
+        // 移动障碍物（困难模式）
+        if (obstacle == 3) {
+            moveObstacles();
+            if (checkCollision()) {
+                switchState(STATE_MAIN_MENU);
+                return;
+            }
         }
-    }
         
         speedCounter = 0;
     } else {
         speedCounter++;
     }
     
-    // 5. 绘制游戏元素
+    // 6. 绘制游戏元素（添加道具绘制）
     drawRunning();
 }

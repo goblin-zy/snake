@@ -66,5 +66,7 @@ void drawReady();
 void drawRunning();
 // 绘制障碍物
 void drawObstacles();
+//绘制道具
+void drawProp(); 
 #endif
 

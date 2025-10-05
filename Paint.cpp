@@ -1,7 +1,5 @@
 #include"allcpp.h"
 
-
-
 void drawMainMenu() {
 // 1. 绘制背景（黑色填充整个窗口，适配800×600）
 setfillcolor(BLACK);
@@ -20,50 +18,14 @@ outtextxy(titleX, 63, title);  // Y坐标按比例调整（原50→63，1.25倍）
     putimage(BTN_RANK_X, BTN_RANK_Y,img_rank);
     putimage(BTN_SET_X, BTN_SET_Y,img_setting);
     putimage(BTN_EXIT_X, BTN_EXIT_Y, img_exit);
-
-
-
-
-/*
-    // 3. 绘制按钮（优化文字显示）
-    setfillcolor(YELLOW);
-    setcolor(DARKGRAY);  // 按钮边框用深灰色
-    setfont(18, 0, "宋体");  // 按钮文字使用宋体
-
-    // 开始按钮
-    bar(BTN_START_X, BTN_START_Y, BTN_START_X+BTN_W, BTN_START_Y+BTN_H);
-    char startText[] = "开始游戏";
-    int startTextWidth = textwidth(startText);
-    outtextxy(BTN_START_X + (BTN_W - startTextWidth)/2, BTN_START_Y + 10, startText);
-    
-    // 排行榜按钮
-    bar(BTN_RANK_X, BTN_RANK_Y, BTN_RANK_X+BTN_W, BTN_RANK_Y+BTN_H);
-    char rankText[] = "排行榜";
-    int rankTextWidth = textwidth(rankText);
-    outtextxy(BTN_RANK_X + (BTN_W - rankTextWidth)/2, BTN_RANK_Y + 10, rankText);
-    
-    // 设置按钮
-    bar(BTN_SET_X, BTN_SET_Y, BTN_SET_X+BTN_W, BTN_SET_Y+BTN_H);
-    char setText[] = "设置";
-    int setTextWidth = textwidth(setText);
-    outtextxy(BTN_SET_X + (BTN_W - setTextWidth)/2, BTN_SET_Y + 10, setText);
-    
-    // 退出按钮
-    bar(BTN_EXIT_X, BTN_EXIT_Y, BTN_EXIT_X+BTN_W, BTN_EXIT_Y+BTN_H);
-    char exitText[] = "退出";
-    int exitTextWidth = textwidth(exitText);
-    outtextxy(BTN_EXIT_X + (BTN_W - exitTextWidth)/2, BTN_EXIT_Y + 10, exitText);
-    */
 }
-
-
 
 void drawDifficultySelect(){
     // 1. 绘制黑色背景（填充800×600窗口）
     setfillcolor(BLACK);
     bar(0, 0, 800, 600);
 
-    // 2. 绘制标题（居中显示“难度选择”）
+    // 2. 绘制标题（居中显示"难度选择"）
     setcolor(WHITE);
     setfont(45, 0, "宋体");
     char title[] = "难度选择";
@@ -74,7 +36,7 @@ void drawDifficultySelect(){
     // -------------------------- 关键修复1：开启文字透明背景（全局生效） --------------------------
     setbkmode(TRANSPARENT);  // EGE 函数：设置文字背景为透明，避免文字周围出现黑块
 
-    // 3. 绘制“简单”按钮（修复：显式重置颜色，精准计算文字居中）
+    // 3. 绘制"简单"按钮（修复：显式重置颜色，精准计算文字居中）
     setfillcolor(GREEN);      // 按钮背景色：绿色
     bar(BTN_DIFF_X, BTN_EASY_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_EASY_Y+BTN_DIFF_H);
     setcolor(BLACK);          // 文字颜色：黑色（与绿色背景对比）
@@ -87,7 +49,7 @@ void drawDifficultySelect(){
               BTN_EASY_Y + (BTN_DIFF_H - easyTextH)/2, 
               easyText);
 
-    // 4. 绘制“中等”按钮（修复：重置颜色，避免继承上一个按钮的状态）
+    // 4. 绘制"中等"按钮（修复：重置颜色，避免继承上一个按钮的状态）
     setfillcolor(YELLOW);     // 按钮背景色：黄色
     bar(BTN_DIFF_X, BTN_MEDIUM_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_MEDIUM_Y+BTN_DIFF_H);
     setcolor(BLACK);          // 显式重置文字颜色（避免继承其他颜色）
@@ -99,7 +61,7 @@ void drawDifficultySelect(){
               BTN_MEDIUM_Y + (BTN_DIFF_H - mediumTextH)/2, 
               mediumText);
 
-    // 5. 绘制“困难”按钮（同上述修复逻辑）
+    // 5. 绘制"困难"按钮（同上述修复逻辑）
     setfillcolor(RED);        // 按钮背景色：红色
     bar(BTN_DIFF_X, BTN_HARD_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_HARD_Y+BTN_DIFF_H);
     setcolor(BLACK);          // 文字颜色：白色（与红色背景对比）
@@ -126,14 +88,6 @@ void drawDifficultySelect(){
     // -------------------------- 关键修复2：刷新缓冲区，确保画面实时显示 --------------------------
    // flushgraph();  // EGE 双缓冲刷新：避免绘制内容延迟或残留
 }
-
-
-
-
-
-
-
-
 
 void drawReady() {
     // 1. 绘制黑色背景（原有逻辑保留）
@@ -218,9 +172,9 @@ outtextxy(titleX, titleY, statusTitle);
         }
     }
 
+    // ★★★ 修复2：在准备阶段也绘制道具
+    drawProp();
 }
-    
-
 
 // 绘制游戏运行中的元素
 void drawRunning() {
@@ -261,6 +215,9 @@ void drawRunning() {
         }
     }
 
+    // 新增：绘制道具
+    drawProp();
+
     // 5. 绘制分数和难度信息
     setcolor(WHITE);
     setfont(20, 0, "宋体");
@@ -273,6 +230,12 @@ void drawRunning() {
     else if (obstacle == 2) sprintf(diffText, "当前难度:中等");
     else sprintf(diffText, "当前难度:困难");
     outtextxy(TEXT_DIFF_X, TEXT_DIFF_Y, diffText);
+
+    if (g_isInvincible) {
+        setcolor(RED);
+        setfont(16, 0, "宋体");
+        outtextxy(TEXT_SCORE_X, TEXT_SCORE_Y + 30, "无敌状态生效中!");
+    }
 }
 
 
@@ -295,6 +258,31 @@ void drawObstacles() {
                     g_obstacles[i].x + GRID_SIZE,    // 右下角 X（与网格大小匹配）
                     g_obstacles[i].y + GRID_SIZE     // 右下角 Y（与网格大小匹配）
                 );
+            }
+        }
+    }
+}
+
+// 绘制道具
+void drawProp() {
+    for (int i = 0; i < 10; i++) {  // 遍历所有道具
+        if (g_props[i].exist) {
+            // 根据道具类型绘制不同的图片
+            switch (g_props[i].type) {
+                case PROP_SPEEDUP:
+                    putimage(g_props[i].x, g_props[i].y, img_prop_speedup);
+                    break;
+                case PROP_INVINCIBLE:
+                    putimage(g_props[i].x, g_props[i].y, img_prop_invincible);
+                    break;
+                case PROP_GROW:
+                    putimage(g_props[i].x, g_props[i].y, img_prop_grow);
+                    break;
+                case PROP_DOUBLE:
+                    putimage(g_props[i].x, g_props[i].y, img_prop_double);
+                    break;
+                default:
+                    break;
             }
         }
     }

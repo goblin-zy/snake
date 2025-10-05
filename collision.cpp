@@ -1,19 +1,19 @@
 #include "allcpp.h"
 
-// æ£€æŸ¥è›‡æ˜¯å¦åƒåˆ°é£Ÿç‰©
+// ¼ì²éÉßÊÇ·ñ³Ôµ½Ê³Îï
 bool checkFoodCollision() {
     for (int i = 0; i < g_foodCount; i++) {
         if (g_food[i].exist && 
             g_snake.x[0] == g_food[i].x && 
             g_snake.y[0] == g_food[i].y) {
             
-            // é£Ÿç‰©è¢«åƒæ‰ï¼Œæ¶ˆå¤±
+            // Ê³Îï±»³Ôµô£¬ÏûÊ§
             g_food[i].exist = false;
             
-            // è›‡é•¿åº¦å¢åŠ 
+            // Éß³¤¶ÈÔö¼Ó
             g_snake.len++;
             
-            // åˆ†æ•°å¢åŠ 
+            // ·ÖÊıÔö¼Ó
             g_currentScore += 10;
             
             return true;
@@ -22,29 +22,52 @@ bool checkFoodCollision() {
     return false;
 }
 
-// æ£€æŸ¥è›‡æ˜¯å¦ç¢°æ’(è¾¹ç•Œã€è‡ªèº«ã€éšœç¢ç‰©)
+// ¼ì²éÉßÊÇ·ñÅö×²(±ß½ç¡¢×ÔÉí¡¢ÕÏ°­Îï)
+// ÎŞµĞ×´Ì¬½öºöÂÔÕÏ°­ÎïÅö×²£¬±ß½çºÍ×ÔÉíÅö×²ÈÔÓĞĞ§
 bool checkCollision() {
-    // 1. æ£€æŸ¥è¾¹ç•Œç¢°æ’
+    // 1. ¼ì²é±ß½çÅö×²£¨ÎŞµĞ×´Ì¬²»Ó°Ïì±ß½çÅö×²£©
     if (g_snake.x[0] < MAP_START_X || g_snake.x[0] >= MAP_END_X ||
         g_snake.y[0] < MAP_START_Y || g_snake.y[0] >= MAP_END_Y) {
         return true;
     }
     
-    // 2. æ£€æŸ¥è‡ªèº«ç¢°æ’
+    // 2. ¼ì²é×ÔÉíÅö×²£¨ÎŞµĞ×´Ì¬²»Ó°Ïì×ÔÉíÅö×²£©
     for (int i = 1; i < g_snake.len; i++) {
         if (g_snake.x[0] == g_snake.x[i] && g_snake.y[0] == g_snake.y[i]) {
             return true;
         }
     }
     
-    // 3. æ£€æŸ¥éšœç¢ç‰©ç¢°æ’
-    for (int i = 0; i < g_obstacleCount; i++) {
-        if (g_obstacles[i].exist && 
-            g_snake.x[0] == g_obstacles[i].x && 
-            g_snake.y[0] == g_obstacles[i].y) {
-            return true;
+    // 3. ¼ì²éÕÏ°­ÎïÅö×²£¨ÎŞµĞ×´Ì¬ÏÂºöÂÔ´ËÏî£©
+    // ĞÂÔöÈ«¾Ö±äÁ¿g_isInvincible±êÊ¶ÎŞµĞ×´Ì¬£¨ĞèÔÚglobal.hÖĞÉùÃ÷£©
+    if (!g_isInvincible) {  // ½öµ±·ÇÎŞµĞ×´Ì¬Ê±¼ì²éÕÏ°­ÎïÅö×²
+        for (int i = 0; i < g_obstacleCount; i++) {
+            if (g_obstacles[i].exist && 
+                g_snake.x[0] == g_obstacles[i].x && 
+                g_snake.y[0] == g_obstacles[i].y) {
+                return true;
+            }
         }
     }
     
+    return false;
+}
+
+// ¼ì²éÉßÊÇ·ñ³Ôµ½µÀ¾ß
+bool checkPropCollision() {
+    for (int i = 0; i < 10; i++) {  // ±éÀúËùÓĞµÀ¾ß£¨×î¶à10¸ö£©
+        if (g_props[i].exist && 
+            g_snake.x[0] == g_props[i].x && 
+            g_snake.y[0] == g_props[i].y) {
+            
+            // ´¥·¢µÀ¾ßĞ§¹û
+            triggerPropEffect(g_props[i].type);
+            
+            // ÒÆ³ıµÀ¾ß
+            removeProp(i);
+            
+            return true;
+        }
+    }
     return false;
 }
