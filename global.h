@@ -44,4 +44,9 @@ extern int g_originalSpeed;            // 原始速度（用于加速效果恢复）
 extern int g_speedEffectDuration;      // 速度效果持续时间
 extern Prop g_props[10];               // 道具数组
 extern int g_propCount;                // 道具数量
+
+extern RankingEntry g_ranking[10];  // 固定10个排名位置
+extern int g_currentScore;          // 当前游戏分数（迁移至此统一管理）
+
+extern char g_username[20];
 #endif

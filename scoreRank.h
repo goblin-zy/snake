@@ -1,8 +1,18 @@
-#ifndef SCORE_RANK_MODULE_H
-#define SCORE_RANK_MODULE_H
+#ifndef SCORERANK_H
+#define SCORERANK_H
 
 
-// 重置当前分数（准备阶段调用，确保新局从0分开始）
-void resetScore();
+// 排行榜条目（仅包含分数和用户名）
+struct RankingEntry {
+    int score;          // 分数
+    char name[20];      // 用户名
+};
 
-#endif // SCORE_RANK_MODULE_H
+
+// 排行榜功能函数
+void resetScore();                  // 重置当前分数
+bool updateRanking(const char* username);  // 更新排行榜（传入用户名）
+void saveRankingToFile();
+void loadRankingFromFile();
+
+#endif

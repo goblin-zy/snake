@@ -140,6 +140,7 @@ outtextxy(titleX, titleY, statusTitle);
         BTN_READY_START_X + BTN_READY_START_W, 
         BTN_READY_START_Y + BTN_READY_START_H);
     setcolor(WHITE);
+    setbkmode(TRANSPARENT);//避免黑框产生 
     setfont(18, 0, "宋体");
     char startBtnText[] = "开始游戏";
     int startBtnTextW = textwidth(startBtnText);
@@ -236,6 +237,14 @@ void drawRunning() {
         setfont(16, 0, "宋体");
         outtextxy(TEXT_SCORE_X, TEXT_SCORE_Y + 30, "无敌状态生效中!");
     }
+
+    // 暂停状态显示（新增）
+    if (g_currentState == STATE_PAUSED) {
+        setcolor(YELLOW);
+        setfont(30, 0, "黑体");
+        outtextxy(TEXT_SCORE_X, 200, "已暂停");
+        outtextxy(TEXT_SCORE_X - 30, 240, "按空格继续");
+    }
 }
 
 
@@ -286,4 +295,169 @@ void drawProp() {
             }
         }
     }
+}
+
+void drawGameOver() {
+    setfillcolor(BLACK);
+    bar(0, 0, WINDOW_W, WINDOW_H);
+
+    // 1. 游戏结束标题
+    setcolor(RED);
+    setfont(50, 0, "黑体");
+    const char* title = "游戏结束";
+    int titleWidth = textwidth(title);
+    int titleX = (WINDOW_W - titleWidth) / 2;
+    outtextxy(titleX, 100, title);  // 上移标题，留出更多空间
+
+    // 2. 最终得分显示
+    char scoreText[50];
+    sprintf(scoreText, "最终得分: %d", g_currentScore);
+    setcolor(WHITE);
+    setfont(30, 0, "黑体");
+    int scoreX = (WINDOW_W - textwidth(scoreText)) / 2;
+    outtextxy(scoreX, 200, scoreText);  // 调整分数位置
+
+    // 3. 鼓励语（如果进入排行榜）
+    bool isInRanking = false;
+    for (int i = 0; i < 10; i++) {
+        if (g_ranking[i].score == g_currentScore) {
+            isInRanking = true;
+            break;
+        }
+    }
+    if (isInRanking) {
+        setcolor(GREEN);
+        setfont(25, 0, "黑体");
+        const char* congrats = "恭喜！你进入了排行榜！";
+        int congratsX = (WINDOW_W - textwidth(congrats)) / 2;
+        outtextxy(congratsX, 260, congrats);  // 鼓励语上移
+    }
+
+    // 4. 用户名输入区域（下移，避免重叠）
+    setcolor(WHITE);
+    setfont(20, 0, "宋体");
+    outtextxy(300, 320, "请输入用户名:");  // 输入提示下移
+    // 绘制输入框背景
+    setcolor(LIGHTGRAY);
+    rectangle(300, 350, 550, 380);  // 输入框下移
+    // 显示当前输入的用户名
+    outtextxy(310, 353, g_username);  // 用户名显示下移
+
+    // 5. 操作提示
+    setcolor(LIGHTGRAY);
+    setfont(20, 0, "宋体");
+    outtextxy(280, 420, "按回车确认，ESC返回主菜单");  // 提示信息下移
+}
+
+
+
+
+
+// 新增：绘制设置界面（包含难度选择）
+void drawSetting() {
+    setfillcolor(BLACK);
+    bar(0, 0, 800, 600);
+
+    // 标题
+    setcolor(WHITE);
+    setfont(45, 0, "黑体");
+    char title[] = "设置";
+    int titleWidth = textwidth(title);
+    int titleX = (800 - titleWidth) / 2;
+    outtextxy(titleX, 63, title);
+
+    // 难度选择标题
+    setfont(30, 0, "黑体");
+    outtextxy(340, 150, "选择难度");
+
+    // 难度按钮（移植自难度选择界面）
+    setbkmode(TRANSPARENT);
+    
+    // 简单
+    setfillcolor(GREEN);
+    bar(BTN_DIFF_X, BTN_EASY_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_EASY_Y+BTN_DIFF_H);
+    setcolor(BLACK);
+    setfont(18, 0, "黑体");
+    char easyText[] = "简单";
+    int easyTextW = textwidth(easyText);
+    int easyTextH = textheight(easyText);
+    outtextxy(BTN_DIFF_X + (BTN_DIFF_W - easyTextW)/2, 
+              BTN_EASY_Y + (BTN_DIFF_H - easyTextH)/2, 
+              easyText);
+
+    // 中等
+    setfillcolor(YELLOW);
+    bar(BTN_DIFF_X, BTN_MEDIUM_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_MEDIUM_Y+BTN_DIFF_H);
+    setcolor(BLACK);
+    setfont(18, 0, "黑体");
+    char mediumText[] = "中等";
+    int mediumTextW = textwidth(mediumText);
+    int mediumTextH = textheight(mediumText);
+    outtextxy(BTN_DIFF_X + (BTN_DIFF_W - mediumTextW)/2, 
+              BTN_MEDIUM_Y + (BTN_DIFF_H - mediumTextH)/2, 
+              mediumText);
+
+    // 困难
+    setfillcolor(RED);
+    bar(BTN_DIFF_X, BTN_HARD_Y, BTN_DIFF_X+BTN_DIFF_W, BTN_HARD_Y+BTN_DIFF_H);
+    setcolor(BLACK);
+    setfont(18, 0, "黑体");
+    char hardText[] = "困难";
+    int hardTextW = textwidth(hardText);
+    int hardTextH = textheight(hardText);
+    outtextxy(BTN_DIFF_X + (BTN_DIFF_W - hardTextW)/2, 
+              BTN_HARD_Y + (BTN_DIFF_H - hardTextH)/2, 
+              hardText);
+
+    // 返回按钮
+    setfillcolor(DARKGRAY);
+    bar(BTN_BACK_X, BTN_BACK_Y, BTN_BACK_X+BTN_BACK_W, BTN_BACK_Y+BTN_BACK_H);
+    setcolor(WHITE);
+    setfont(14, 0, "黑体");
+    char backText[] = "返回";
+    int backTextW = textwidth(backText);
+    int backTextH = textheight(backText);
+    outtextxy(BTN_BACK_X + (BTN_BACK_W - backTextW)/2, 
+              BTN_BACK_Y + (BTN_BACK_H - backTextH)/2, 
+              backText);
+}
+
+
+
+
+
+// 绘制排行榜界面
+void drawRanking() {
+    setfillcolor(BLACK);
+    bar(0, 0, WINDOW_W, WINDOW_H);
+
+    // 标题
+    setcolor(WHITE);
+    setfont(45, 0, "宋体");
+    const char* title = "得分排行榜";
+    int titleX = (WINDOW_W - textwidth(title)) / 2;
+    outtextxy(titleX, 63, title);
+
+    // 表头
+    setfont(25, 0, "宋体");
+    outtextxy(220, 150, "排名");
+    outtextxy(350, 150, "分数");
+    outtextxy(480, 150, "用户名");
+
+    // 排行榜内容
+    for (int i = 0; i < 10; i++) {
+        char buf[50];
+        sprintf(buf, "%d.", i+1);
+        outtextxy(230, 200 + i*30, buf);
+
+        sprintf(buf, "%d", g_ranking[i].score);
+        outtextxy(360, 200 + i*30, buf);
+
+        outtextxy(480, 200 + i*30, g_ranking[i].name);
+    }
+
+    // 返回提示
+    setcolor(LIGHTGRAY);
+    setfont(20, 0, "宋体");
+    outtextxy(300, 500, "按ESC返回主菜单");
 }

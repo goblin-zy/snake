@@ -14,7 +14,9 @@ enum ClickType {
     CLICK_DIFFICULT,
     CLICK_BACK,
 
-    CLICK_RUN
+    CLICK_RUN,    
+    CLICK_SAVE_SETTING,
+
 };
 
 // 监听鼠标点击，返回点击类型

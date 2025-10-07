@@ -68,5 +68,8 @@ void drawRunning();
 void drawObstacles();
 //绘制道具
 void drawProp(); 
+void drawGameOver();
+void drawSetting();
+void drawRanking();                 // 绘制排行榜界面
 #endif
 

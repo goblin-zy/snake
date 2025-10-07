@@ -25,6 +25,10 @@ int g_propCount = 0;
 Obstacle g_obstacles[100];  // 增加容量到100个
 int g_obstacleCount = 0;
 
+RankingEntry g_ranking[10];  // 固定10个排名位置
+
+char g_username[20];
+
 //图片 
     PIMAGE img_start;
     PIMAGE img_rank;
@@ -50,45 +54,52 @@ int g_obstacleCount = 0;
 
 // 声明主菜单处理函数（阶段1核心逻辑）
 void handleMainMenu();
-void handleDifficultySelect();
 void handleReadyStage();
 void handleRunning();
+void handleGameOver();
+void handleSetting();
+void handleRanking(); 
+void handlePaused();
 
 int main() {
     srand((unsigned int)time(NULL));    
+    initWindow(800,600);
+    loadResources();
+    initCoreData();
+    loadRankingFromFile(); // 加载保存的排行榜
 
-    // 1. 初始化：窗口→资源→数据
-    initWindow(800,600);    // 创建640×480窗口
-    loadResources();         // 加载主菜单图片/字体
-    initCoreData();          // 初始化游戏状态为主菜单
-
-    // 2. 主循环（窗口未关闭则持续运行）
     while (is_run()) {
-        // 根据当前状态执行对应逻辑（阶段1仅主菜单）
         switch (g_currentState) {
-            case STATE_MAIN_MENU:{
+            case STATE_MAIN_MENU:
                 handleMainMenu();
                 break;
-            }
-            case STATE_DIFFICULTY_SELECT:{
-            	handleDifficultySelect();
-				break;
-			}
-			case STATE_READY:{
-				handleReadyStage();
-				break;
-			} 
-            case STATE_RUNNING:{
+            case STATE_READY:
+                handleReadyStage();
+                break;
+            case STATE_RUNNING:
                 handleRunning();
-            }
-            // 其他状态（难度选择/排行榜等）后续阶段补充
+                break;
+            case STATE_PAUSED: // 暂停状态共用运行时的绘制逻辑
+                handlePaused();
+				break; 
+            case STATE_GAME_OVER:
+                handleGameOver();
+                break;
+            case STATE_RANKING:
+                handleRanking();
+                break;
+            case STATE_SETTING:
+                handleSetting();
+                break;
+            case STATE_EXIT:
+                closegraph(); // 退出游戏
+                return 0;
             default:
                 break;
         }
-        delay_fps(30);  // 控制帧率（30帧/秒，避免CPU占用过高）
+        delay_fps(30);
     }
 
-    // 3. 释放资源（程序退出）
     releaseResources();
     return 0;
 }
@@ -104,13 +115,13 @@ void handleMainMenu() {
     // 步骤3：根据点击类型切换状态
     switch (click) {
         case CLICK_START:
-            switchState(STATE_DIFFICULTY_SELECT);  // 开始→难度选择1
+            switchState(STATE_READY);  
             break;
         case CLICK_RANKING:
             switchState(STATE_RANKING);            // 排行榜→排行榜状态
             break;
         case CLICK_SETTING:
-            switchState(STATE_SETTING);            // 设置→设置状态
+            switchState(STATE_SETTING);            // 设置→设置难度 
             break;
         case CLICK_EXIT:
             switchState(STATE_EXIT);               // 退出→终止程序
@@ -120,18 +131,6 @@ void handleMainMenu() {
     }
 }
 
-void handleDifficultySelect(){
-	drawDifficultySelect();
-	ClickType click = listenMouseClick_difficulty();
-	if(click==CLICK_EASY||click==CLICK_MEDIUM||click==CLICK_DIFFICULT){
-    loadDefaultDifficulty();
-    setDifficulty(click);
-    switchState(STATE_READY);
-}
-    if(click==CLICK_BACK){
-	switchState(STATE_MAIN_MENU);
-}
-}
 
 
 /*void handleReadyStage(){
@@ -177,50 +176,138 @@ void handleReadyStage(){
     }
 }
 
-void handleRunning(){
-    // 更新道具效果状态
-    updatePropEffect();
-
-    // 1. 处理输入，改变蛇的方向
-    listenKeyPress();
-    
-    // 2. 控制蛇的移动速度
-    static int speedCounter = 0;
-    if (speedCounter >= snakespeed) {
-        // 移动蛇
-        moveSnake();
+void handleRunning() {
+    if (g_currentState == STATE_RUNNING) { // 只有运行状态才更新游戏逻辑
+        updatePropEffect();
+        listenKeyPress();
         
-        // 检查是否碰撞
-        if (checkCollision()) {
-            switchState(STATE_MAIN_MENU);
-            return;
-        }
-        
-        // 3. 检查是否吃到食物
-        bool ateFood = checkFoodCollision();
-        
-        // 4. 检查是否吃到道具
-        checkPropCollision();
-        
-        // 5. 如果吃到食物，重新生成食物
-        if (ateFood) {
-            generateFood();
-        }
-        
-        // 移动障碍物（困难模式）
-        if (obstacle == 3) {
-            moveObstacles();
+        static int speedCounter = 0;
+        if (speedCounter >= snakespeed) {
+            moveSnake();
+            
             if (checkCollision()) {
+                switchState(STATE_GAME_OVER);
+                return;
+            }
+            
+            bool ateFood = checkFoodCollision();
+            checkPropCollision();
+            
+            if (ateFood) {
+                generateFood();
+            }
+            
+            if (obstacle == 3) {
+                moveObstacles();
+                if (checkCollision()) {
+                 //   updateRanking("玩家");
+                    switchState(STATE_GAME_OVER);
+                    return;
+                }
+            }
+            
+            speedCounter = 0;
+        } else {
+            speedCounter++;
+        }
+    }
+    
+    drawRunning(); // 无论运行还是暂停都绘制界面
+}
+
+void handleGameOver() {
+    drawGameOver();
+    key_msg key;
+    
+    static bool hasSaved = false;
+    static int inputPos = 0;
+
+    // 处理用户名输入
+    if (kbhit()) {
+        key = getkey();
+            //  ESC键返回主菜单
+            if (key.key == VK_ESCAPE) {
+                hasSaved = false;
+                inputPos = 0;
+                memset(g_username, 0, sizeof(g_username));
                 switchState(STATE_MAIN_MENU);
                 return;
             }
-        }
-        
-        speedCounter = 0;
-    } else {
-        speedCounter++;
+
+            // 回车键确认输入
+            if (key.key == VK_RETURN && inputPos > 0) {
+                if (!hasSaved) {
+                    updateRanking(g_username);
+                    saveRankingToFile();
+                    hasSaved = true;
+                }
+                return;
+            }
+
+            // 退格键删除字符
+            if (key.key == VK_BACK && inputPos > 0) {
+                inputPos--;
+                g_username[inputPos] = '\0';
+            }
+
+            // 字母数字输入
+            if (key.key >= 32 && key.key <= 126 && inputPos < 19) {
+                g_username[inputPos++] = key.key;  // 此处将key.asc改为key.key
+                g_username[inputPos] = '\0';
+            }
     }
+
+    // 显示输入提示和当前用户名
+  /*  setcolor(WHITE);
+    setfont(20, 0, "宋体");
+    outtextxy(300, 300, "请输入用户名:");
+    outtextxy(300, 330, g_username);  */
+}
+
+// 新增：处理设置界面（包含难度选择）
+void handleSetting() {
+    drawSetting();
+    ClickType click = listenMouseClick_difficulty(); // 复用难度选择的鼠标监听
+    if (click == CLICK_EASY || click == CLICK_MEDIUM || click == CLICK_DIFFICULT) {
+        setDifficulty(click); // 设置难度
+    }
+    if (click == CLICK_BACK) {
+        switchState(STATE_MAIN_MENU); // 返回主菜单
+    }
+}
+
+
+void handleRanking(){
+                // 按ESC返回主菜单
+                key_msg key;
+                if (kbhit()) {
+                    key = getkey();
+                    if ( key.key == 27) {   //有延迟所以不能使用 key.msg == key_msg_down &&判断 
+                        switchState(STATE_MAIN_MENU);
+                    }
+                }
+                drawRanking(); // 显示排行榜
+}
+
+// 处理暂停状态
+void handlePaused() {
+    // 绘制暂停界面
+    setfillcolor(BLACK);
+    bar(0, 0, WINDOW_W, WINDOW_H);
     
-    // 6. 绘制游戏元素（添加道具绘制）
-    drawRunning();
+    setcolor(WHITE);
+    setfont(40, 0, "宋体");
+    char pauseText[] = "游戏暂停";
+    int textWidth = textwidth(pauseText);
+    int textX = (WINDOW_W - textWidth) / 2;
+    outtextxy(textX, 200, pauseText);
+    
+    // 显示提示信息
+    setfont(20, 0, "宋体");
+    char hintText[] = "按空格键继续游戏 | 按ESC返回主菜单";
+    int hintWidth = textwidth(hintText);
+    int hintX = (WINDOW_W - hintWidth) / 2;
+    outtextxy(hintX, 300, hintText);
+    
+    listenKeyPress();
 }

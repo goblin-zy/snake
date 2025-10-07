@@ -101,31 +101,37 @@ ClickType listenMouseClick_Run(){
     return click;
 }
     
-// 监听键盘输入，控制蛇的方向   直接改变了方向，所以返回值是void
+
+// 新增：处理暂停快捷键
 void listenKeyPress() {
     key_msg key;
-    // 检查是否有键盘消息
     if (kbhit()) {
         key = getkey();
-        // 只处理按键按下事件
-        if (key.msg == key_msg_down) {
+      //  if (key.msg == key_msg_down) {   还是老问题，并不能读取到按下（可能msg读取的是其他情况） 
             switch (key.key) {
-                case VK_UP:    // 上方向键
+                case VK_UP:    // 上
                     changeDirection(0);
                     break;
-                case VK_RIGHT:  // 右方向键
+                case VK_RIGHT:  // 右
                     changeDirection(1);
                     break;
-                case VK_DOWN:  // 下方向键
+                case VK_DOWN:  // 下
                     changeDirection(2);
                     break;
-                case VK_LEFT:  // 左方向键
+                case VK_LEFT:  // 左
                     changeDirection(3);
                     break;
-                case VK_ESCAPE: // ESC键暂停游戏
-                    // 这里可以添加暂停逻辑
+                case VK_ESCAPE: // ESC返回主菜单
+                    switchState(STATE_MAIN_MENU);
+                    break;
+                case VK_SPACE:  // 空格暂停/恢复（新增）
+                    if (g_currentState == STATE_RUNNING) {
+                        switchState(STATE_PAUSED);
+                    } else if (g_currentState == STATE_PAUSED) {
+                        switchState(STATE_RUNNING);
+                    }
                     break;
             }
-        }
+      //  }
     }
 }

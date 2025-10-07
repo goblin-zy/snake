@@ -52,6 +52,9 @@ void loadResources() {
 
 void initCoreData() {
     g_currentState = STATE_MAIN_MENU;  // 初始化状态
+    //默认难度的设置 
+    snakespeed=15;
+    obstacle=1;
 }
 
 void releaseResources() {
