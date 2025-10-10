@@ -10,8 +10,16 @@ bool checkFoodCollision() {
             // 食物被吃掉，消失
             g_food[i].exist = false;
             
-            // 蛇长度增加
-            g_snake.len++;
+            // 关键修复：保存增加前的尾部坐标（当前最后一节）
+            int lastIndex = g_snake.len - 1;  // 增加前的尾部索引
+            int newTailX = g_snake.x[lastIndex];
+            int newTailY = g_snake.y[lastIndex];
+            
+            g_snake.len++;  // 长度+1
+            
+            // 给新增的蛇节（新尾部）赋值
+            g_snake.x[g_snake.len - 1] = newTailX;
+            g_snake.y[g_snake.len - 1] = newTailY;
             
             // 分数增加
             g_currentScore += 10;

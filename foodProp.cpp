@@ -53,8 +53,19 @@ void triggerPropEffect(PropType type) {
             break;
         }
         case PROP_GROW: {
+        // 保存当前尾部坐标
+        int lastIndex = g_snake.len - 1;
+        int newTailX = g_snake.x[lastIndex];
+        int newTailY = g_snake.y[lastIndex];
+        	
             // 直接增长3节
             g_snake.len += 3;
+            
+        for(int i=1;i<=3;i++){
+        	g_snake.x[g_snake.len-i]=newTailX;
+        	g_snake.y[g_snake.len-i]=newTailY;
+		}
+        
             break;
         }
         case PROP_DOUBLE: {

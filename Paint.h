@@ -54,9 +54,9 @@
 #define BTN_READY_START_Y 150 // 状态栏内Y坐标
 // 2. 得分/难度文本位置（状态栏内）
 #define TEXT_SCORE_X 640
-#define TEXT_SCORE_Y  300// 得分文本Y
+#define TEXT_SCORE_Y  200// 得分文本Y
 #define TEXT_DIFF_X 640
-#define TEXT_DIFF_Y  450 // 难度文本Y 
+#define TEXT_DIFF_Y  350 // 难度文本Y 
 
 // 绘制主菜单界面（阶段1核心绘制函数）
 void drawMainMenu();

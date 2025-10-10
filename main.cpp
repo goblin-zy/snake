@@ -230,6 +230,17 @@ void handleGameOver() {
                 hasSaved = false;
                 inputPos = 0;
                 memset(g_username, 0, sizeof(g_username));
+                
+            // 2. 关键：彻底清空所有残留的键盘和鼠标事件
+            // 清空键盘事件缓冲区
+            while (kbhit()) {  // 循环检查，直到没有未处理的键盘事件
+                getkey();  // 读取并丢弃事件
+            }
+            // 清空鼠标事件缓冲区（如果你的主菜单处理鼠标事件）
+            while (mousemsg()) {  // 循环检查，直到没有未处理的鼠标事件
+                getmouse();  // 读取并丢弃事件
+            }    
+            
                 switchState(STATE_MAIN_MENU);
                 return;
             }

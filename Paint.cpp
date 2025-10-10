@@ -127,13 +127,13 @@ outtextxy(titleX, titleY, statusTitle);
     // ② 得分显示（初始0分，g_currentScore是全局变量）
     char scoreText[30];
     sprintf(scoreText, "当前得分：%d", g_currentScore);
-    outtextxy(TEXT_SCORE_X, TEXT_SCORE_Y, scoreText);
+    outtextxy(TEXT_SCORE_X, TEXT_SCORE_Y+100, scoreText);
     // ③ 难度显示（根据g_difficulty映射文字）
     char diffText[30];
     if (obstacle == 1) sprintf(diffText, "当前难度：简单");
     else if (obstacle == 2) sprintf(diffText, "当前难度：中等");
     else sprintf(diffText, "当前难度：困难");
-    outtextxy(TEXT_DIFF_X, TEXT_DIFF_Y, diffText);
+    outtextxy(TEXT_DIFF_X, TEXT_DIFF_Y+100, diffText);
     // ④ 绘制开始按钮（绿色背景+白色文字，状态栏内）
     setfillcolor(GREEN);
     bar(BTN_READY_START_X, BTN_READY_START_Y, 
@@ -320,7 +320,7 @@ void drawGameOver() {
     // 3. 鼓励语（如果进入排行榜）
     bool isInRanking = false;
     for (int i = 0; i < 10; i++) {
-        if (g_ranking[i].score == g_currentScore) {
+        if (g_ranking[i].score == g_currentScore&&g_currentScore!=0) {
             isInRanking = true;
             break;
         }
